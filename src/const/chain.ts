@@ -3,4 +3,5 @@ export const CHAIN_NAME = {
   sui: 'sui',
   neutron: 'neutron',
   juno: 'juno',
+  arbitrum: 'arbitrum'
 };

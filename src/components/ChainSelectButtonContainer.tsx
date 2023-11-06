@@ -1,5 +1,6 @@
 import { Badge, Form, ListGroup } from 'react-bootstrap';
 
+import Arbitrum from '../assets/Arbitrum-Big.png';
 import Aptos from '../assets/Aptos-Big.png';
 import Sui from '../assets/Sui-Big.png';
 import Neutron from '../assets/Neutron-Big.svg';
@@ -46,14 +47,25 @@ export const ChainSelectButtonContainer: FunctionComponent<InterfaceProps> = ({
           style={{ cursor: 'pointer' }}
           action
           onClick={() => {
+            setChain('Arbitrum');
+          }}
+        >
+          <img src={Arbitrum} style={{ width: '35px', marginRight: '20px' }} alt="Arbitrum logo" />
+          <b>ARBITRUM (EVM+)</b>
+          <Badge bg="danger" style={{ position: 'absolute', right: '10px', top: '0px' }}>
+            Beta
+          </Badge>
+        </ListGroup.Item>
+        <ListGroup.Item
+          as="li"
+          style={{ cursor: 'pointer' }}
+          action
+          onClick={() => {
             setChain('Neutron');
           }}
         >
           <img src={Neutron} style={{ width: '35px', marginRight: '20px' }} alt="Neutron logo" />
           <b>NEUTRON (CosmWasm)</b>
-          <Badge bg="danger" style={{ position: 'absolute', right: '10px', top: '0px' }}>
-            Beta
-          </Badge>
         </ListGroup.Item>
         <ListGroup.Item
           as="li"

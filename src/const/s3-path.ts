@@ -15,6 +15,6 @@ export class S3Path {
     timestamp: string,
     filetype: string,
   ) {
-    return `${chainName}/${chainId}/${account}/${timestamp}/out_${account}_${timestamp}_${filetype}.zip`;
+    return `${chainName}/${chainId}/${account}/${timestamp}/${timestamp}.zip`;
   }
 }
