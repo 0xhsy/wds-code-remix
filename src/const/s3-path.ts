@@ -15,6 +15,16 @@ export class S3Path {
     timestamp: string,
     filetype: string,
   ) {
-    return `${chainName}/${chainId}/${account}/${timestamp}/${timestamp}.zip`;
+    return `${chainName}/${chainId}/${account}/${timestamp}/out_${account}_${timestamp}_${filetype}.zip`;
   }
+
+  static arbitrumOutKey(
+    chainName: string,
+    chainId: string,
+    account: string,
+    timestamp: string,
+) {
+  return `${chainName}/${chainId}/${account}/${timestamp}/output.zip`;
+}
+
 }

@@ -129,7 +129,7 @@ export const WelldoneConnect: React.FunctionComponent<InterfaceProps> = ({
         <AlertCloseButton onClick={() => setError('')} />
         <div>{error}</div>
       </Alert>
-      {network ? <NetworkUI networkName={network} /> : null}
+      {network ? <NetworkUI networkName={'testnet'} /> : null}
       <Form>
         <Form.Group>
           <Form.Text className="text-muted" style={mb4}>
