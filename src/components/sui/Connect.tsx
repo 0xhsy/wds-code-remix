@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { WelldoneConnect } from './WelldoneConnect';
+import { SuiConnect } from './SuiConnect';
 import { Project } from './Project';
 import { Client } from '@remixproject/plugin';
 import { Api } from '@remixproject/plugin-utils';
 import { IRemixApi } from '@remixproject/plugin-api';
 import { Connect as CommonConnect } from '../common/Connect';
-import { NetworkUI } from '../common/Network';
+
+import { WalletProvider, ConnectButton } from '@suiet/wallet-kit';
+import "@suiet/wallet-kit/style.css";
 
 interface InterfaceProps {
   client: Client<Api, Readonly<IRemixApi>>;
@@ -18,7 +20,7 @@ export const Connect: React.FunctionComponent<InterfaceProps> = ({ client }) => 
   const [wallet, setWallet] = useState('');
   const [account, setAccount] = useState('');
   const [dapp, setDapp] = useState<InterfaceDapp>();
-  const [active, setActive] = useState<boolean>(false);
+  const [active, setActive] = useState<boolean>(true);
 
   return (
     <div>
@@ -31,15 +33,19 @@ export const Connect: React.FunctionComponent<InterfaceProps> = ({ client }) => 
         wallet={wallet}
       />
       <div>
-        <WelldoneConnect
-          active={active}
-          account={account}
-          setAccount={setAccount}
-          setDapp={setDapp}
-          client={client}
-          setActive={setActive}
-        />
-        <Project wallet={wallet} account={account} dapp={dapp} client={client} />
+        <WalletProvider>
+          <ConnectButton></ConnectButton>
+          <SuiConnect
+            active={active}
+            account={account}
+            setAccount={setAccount}
+            setDapp={setDapp}
+            client={client}
+            setActive={setActive}
+          />
+
+          <Project wallet={wallet} account={account} dapp={dapp} client={client} />
+        </WalletProvider>
       </div>
     </div>
   );

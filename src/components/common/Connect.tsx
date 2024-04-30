@@ -27,6 +27,7 @@ export const Connect: React.FunctionComponent<InterfaceProps> = ({
   const [error, setError] = useState<string>('');
   return (
     <ListGroup>
+      {chain !== 'sui' && (
       <ListGroup.Item
         as="li"
         style={{ cursor: 'pointer' }}
@@ -49,6 +50,7 @@ export const Connect: React.FunctionComponent<InterfaceProps> = ({
         <img src={Welldone} style={{ width: '25px', marginRight: '10px' }} alt="WELLDONE logo" />
         <b>Connect to WELLDONE</b>
       </ListGroup.Item>
+      )}
       {chain === 'aptos' ? (
         <ListGroup.Item
           as="li"

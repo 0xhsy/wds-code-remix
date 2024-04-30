@@ -71,6 +71,7 @@ import { SuiObjectData } from '@mysten/sui.js/client';
 import { Deploy } from './Deploy';
 import { CustomTooltip } from '../common/CustomTooltip';
 import { CopyToClipboard } from '../common/CopyToClipboard';
+import { useWallet } from '@suiet/wallet-kit';
 
 type QueryMode = 'package' | 'address' | '';
 
@@ -157,6 +158,9 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
   const [parameters, setParameters] = useState<any[]>([]);
 
   const [uploadCodeChecked, setUploadCodeChecked] = useState(true);
+
+  const wallet = useWallet()
+
   useEffect(() => {
     setPackageName('');
     setBuildInfo(undefined);
@@ -282,14 +286,17 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
     });
     setLoading(true);
 
-    const address = accountID;
+    const address = wallet.address;
     const timestamp = Date.now().toString();
     setCompileTimestamp(timestamp);
+
+    console.log('chainName', CHAIN_NAME.sui)
+    console.log('chainId', window.dapp.networks.sui.chain)
 
     // ------------------------------------------------------------------
     const isSrcZipUploadSuccess = await FileUtil.uploadSrcZip({
       chainName: CHAIN_NAME.sui,
-      chainId: dapp.networks.sui.chain,
+      chainId: window.dapp.networks.sui.chain,
       account: address || 'noaddress',
       timestamp: timestamp.toString() || '0',
       fileType: 'sui',
@@ -321,7 +328,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
     const uploadUrls = await FileUtil.uploadUrls({
       chainName: CHAIN_NAME.sui,
-      chainId: dapp.networks.sui.chain,
+      chainId: window.dapp.networks.sui.chain,
       account: address || 'noaddress',
       timestamp: timestamp.toString() || '0',
       projFiles: projFiles_,
@@ -367,8 +374,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
               url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
               params: {
                 chainName: 'sui',
-                chainId: dapp.networks.sui.chain,
-                account: accountID,
+                chainId: window.dapp.networks.sui.chain,
+                account: wallet.address,
                 timestamp: timestamp,
               },
               responseType: 'arraybuffer',
@@ -383,7 +390,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
           );
           if (
             data.compileId !==
-            compileIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp) // todo sui
+            compileIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp) // todo sui
             // compileIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)
           ) {
             return;
@@ -401,7 +408,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
         );
         if (
           data.compileId !==
-          compileIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp) // todo sui
+          compileIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp) // todo sui
           // compileIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)
         ) {
           return;
@@ -421,7 +428,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
         if (
           data.compileId !==
-          compileIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp) // todo sui
+          compileIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp) // todo sui
           // compileIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)
         ) {
           return;
@@ -434,9 +441,9 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             bucket: S3Path.bucket(),
             fileKey: S3Path.outKey(
               CHAIN_NAME.sui,
-              dapp.networks.sui.chain, // todo sui
+              window.dapp.networks.sui.chain, // todo sui
               // 'devnet',
-              accountID,
+              wallet.address as any,
               timestamp,
               BUILD_FILE_TYPE.move,
             ),
@@ -451,8 +458,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
             params: {
               chainName: 'sui',
-              chainId: dapp.networks.sui.chain,
-              account: accountID,
+              chainId: window.dapp.networks.sui.chain,
+              account: wallet.address as any,
               timestamp: timestamp,
             },
             responseType: 'arraybuffer',
@@ -592,12 +599,12 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       });
 
       const remixSuiCompileRequestedV1: RemixSuiCompileRequestedV1 = {
-        compileId: (CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp), // todo sui
+        compileId: (CHAIN_NAME.sui, window.dapp.networks.sui.chain, address, timestamp), // todo sui
         // compileId: (CHAIN_NAME.sui, 'devnet', address, timestamp),
         chainName: CHAIN_NAME.sui,
-        chainId: dapp.networks.sui.chain, // todo sui
+        chainId: window.dapp.networks.sui.chain, // todo sui
         // chainId: 'devnet',
-        address: address || 'noaddress',
+        address: wallet.address as any || 'noaddress',
         timestamp: timestamp.toString() || '0',
         fileType: 'move',
       };
@@ -616,7 +623,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
   const sendTestReq = async (blob: Blob) => {
     setTestLoading(true);
 
-    const address = accountID;
+    const address = wallet.address as any;
     const timestamp = Date.now().toString();
     try {
       // socket connect
@@ -645,8 +652,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
               url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
               params: {
                 chainName: 'sui',
-                chainId: dapp.networks.sui.chain,
-                account: accountID,
+                chainId: window.dapp.networks.sui.chain,
+                account: wallet.address as any,
                 timestamp: timestamp,
               },
               responseType: 'arraybuffer',
@@ -660,7 +667,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             )}`,
           );
 
-          if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+          if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp)) {
             // todo sui
             // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
             return;
@@ -674,7 +681,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
       socket.on(COMPILER_SUI_TEST_LOGGED_V1, async (data: CompilerSuiTestLoggedV1) => {
         log.debug(`${RCV_EVENT_LOG_PREFIX} ${COMPILER_SUI_TEST_LOGGED_V1} data=${stringify(data)}`);
-        if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+        if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp)) {
           // todo sui
           // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
           return;
@@ -690,8 +697,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
             params: {
               chainName: 'sui',
-              chainId: dapp.networks.sui.chain,
-              account: accountID,
+              chainId: window.dapp.networks.sui.chain,
+              account: wallet.address as any,
               timestamp: timestamp,
             },
             responseType: 'arraybuffer',
@@ -702,7 +709,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
         log.debug(
           `${RCV_EVENT_LOG_PREFIX} ${COMPILER_SUI_TEST_COMPLETED_V1} data=${stringify(data)}`,
         );
-        if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+        if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp)) {
           // todo sui
           // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
           return;
@@ -713,9 +720,9 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
       const formData = new FormData();
       formData.append('chainName', CHAIN_NAME.sui);
-      formData.append('chainId', dapp.networks.sui.chain); // todo sui
+      formData.append('chainId', window.dapp.networks.sui.chain); // todo sui
       // formData.append('chainId', 'devnet');
-      formData.append('account', address || 'noaddress');
+      formData.append('account', wallet.address as any || 'noaddress');
       formData.append('timestamp', timestamp.toString() || '0');
       formData.append('fileType', 'move');
       formData.append('zipFile', blob || '');
@@ -728,19 +735,19 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       });
 
       if (res.status !== 201) {
-        log.error(`src upload fail. address=${address}, timestamp=${timestamp}`);
+        log.error(`src upload fail. address=${wallet.address as any}, timestamp=${timestamp}`);
         socket.disconnect();
         setLoading(false);
         return;
       }
 
       const remixSuiTestRequestedV1: RemixSuiTestRequestedV1 = {
-        id: compileIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp), // todo sui
+        id: compileIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp), // todo sui
         // id: compileIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp),
         chainName: CHAIN_NAME.sui,
-        chainId: dapp.networks.sui.chain, // todo sui
+        chainId: window.dapp.networks.sui.chain, // todo sui
         // chainId: 'devnet',
-        address: address || 'noaddress',
+        address: wallet.address as any || 'noaddress',
         timestamp: timestamp.toString() || '0',
         fileType: 'move',
       };
@@ -759,7 +766,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
   const sendProveReq = async (blob: Blob) => {
     setProveLoading(true);
 
-    const address = accountID;
+    const address = wallet.address as any;
     const timestamp = Date.now().toString();
     try {
       // socket connect
@@ -788,8 +795,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
               url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
               params: {
                 chainName: 'sui',
-                chainId: dapp.networks.sui.chain,
-                account: accountID,
+                chainId: window.dapp.networks.sui.chain,
+                account: wallet.address as any,
                 timestamp: timestamp,
               },
               responseType: 'arraybuffer',
@@ -803,7 +810,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             )}`,
           );
 
-          if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+          if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, address, timestamp)) {
             // todo sui
             // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
             return;
@@ -819,7 +826,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
         log.debug(
           `${RCV_EVENT_LOG_PREFIX} ${COMPILER_SUI_PROVE_LOGGED_V1} data=${stringify(data)}`,
         );
-        if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+        if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp)) {
           // todo sui
           // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
           return;
@@ -835,8 +842,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
             url: `${COMPILER_API_ENDPOINT}/s3Proxy`,
             params: {
               chainName: 'sui',
-              chainId: dapp.networks.sui.chain,
-              account: accountID,
+              chainId: window.dapp.networks.sui.chain,
+              account: wallet.address as any,
               timestamp: timestamp,
             },
             responseType: 'arraybuffer',
@@ -847,7 +854,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
         log.debug(
           `${RCV_EVENT_LOG_PREFIX} ${COMPILER_SUI_PROVE_COMPLETED_V1} data=${stringify(data)}`,
         );
-        if (data.id !== reqIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp)) {
+        if (data.id !== reqIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp)) {
           // todo sui
           // if (data.id !== reqIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp)) {
           return;
@@ -858,9 +865,9 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
       const formData = new FormData();
       formData.append('chainName', CHAIN_NAME.sui);
-      formData.append('chainId', dapp.networks.sui.chain); // todo sui
+      formData.append('chainId', window.dapp.networks.sui.chain); // todo sui
       // formData.append('chainId', 'devnet');
-      formData.append('account', address || 'noaddress');
+      formData.append('account', wallet.address as any || 'noaddress');
       formData.append('timestamp', timestamp.toString() || '0');
       formData.append('fileType', 'move');
       formData.append('zipFile', blob || '');
@@ -873,19 +880,19 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       });
 
       if (res.status !== 201) {
-        log.error(`src upload fail. address=${address}, timestamp=${timestamp}`);
+        log.error(`src upload fail. address=${wallet.address as any}, timestamp=${timestamp}`);
         socket.disconnect();
         setLoading(false);
         return;
       }
 
       const remixSuiProveRequestedV1: RemixSuiProveRequestedV1 = {
-        id: compileIdV2(CHAIN_NAME.sui, dapp.networks.sui.chain, address, timestamp), // todo sui
+        id: compileIdV2(CHAIN_NAME.sui, window.dapp.networks.sui.chain, wallet.address as any, timestamp), // todo sui
         // id: compileIdV2(CHAIN_NAME.sui, 'devnet', address, timestamp),
         chainName: CHAIN_NAME.sui,
-        chainId: dapp.networks.sui.chain, // todo sui
+        chainId: window.dapp.networks.sui.chain, // todo sui
         // chainId: 'devnet',
-        address: address || 'noaddress',
+        address: wallet.address as any || 'noaddress',
         timestamp: timestamp.toString() || '0',
         fileType: 'move',
       };
@@ -956,7 +963,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
         targetInitPackageId = loadedPackageIds[0];
       }
       log.info(`[initPackageCtx] targetInitPackageId=${targetInitPackageId}`);
-      const modules = await getModules(dapp.networks.sui.chain, targetInitPackageId); // todo sui
+      const modules = await getModules(window.dapp.networks.sui.chain, targetInitPackageId); // todo sui
       log.info(`[initPackageCtx] modules=${JSON.stringify(modules, null, 2)}`);
       // const modules = await getModules('devnet', loadedPackageIds[0]);
       if (isEmptyList(modules)) {
@@ -991,7 +998,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
   async function initObjectsCtx(account: string, chainId: SuiChainId) {
     try {
-      const objects = await getOwnedObjects(account, dapp.networks.sui.chain); // todo sui
+      const objects = await getOwnedObjects(account, window.dapp.networks.sui.chain); // todo sui
       // const objects = await getOwnedObjects(account, chainId);
       log.info(`@@@ sui objects`, objects);
       setSuiObjects([...objects]);
@@ -1015,11 +1022,11 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       });
       setDeployedContract(address);
 
-      await initObjectsCtx(address, dapp.networks.sui.chain); // todo sui
+      await initObjectsCtx(address, window.dapp.networks.sui.chain); // todo sui
       // await initObjectsCtx(inputAddress, 'devnet');
     }
 
-    await initPackageCtx(address, dapp.networks.sui.chain, packageId);
+    await initPackageCtx(address, window.dapp.networks.sui.chain, packageId);
     // await initPackageCtx(inputAddress, 'devnet');
   };
 
@@ -1027,7 +1034,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
     const packageId = e.target.value;
     setTargetPackageId(packageId);
     log.info(`[onChangePackageId] packageId=${packageId}`);
-    const modules = await getModules(dapp.networks.sui.chain, packageId); // todo sui
+    const modules = await getModules(window.dapp.networks.sui.chain, packageId); // todo sui
     // const modules = await getModules('devnet', packageId);
     setModules([...modules]);
     if (isEmptyList(modules)) {
@@ -1114,8 +1121,8 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
     const dappTxn_ = await moveCallTxn(
       client,
-      accountID,
-      dapp.networks.sui.chain,
+      wallet.address as any,
+      window.dapp.networks.sui.chain,
       targetPackageId,
       targetModuleName,
       targetFunc!,
@@ -1124,7 +1131,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       Number(gas),
     );
 
-    const txnHash: string[] = await dapp.request('sui', {
+    const txnHash: string[] = await window.dapp.request('sui', {
       method: 'dapp:signAndSendTransaction',
       params: [dappTxn_],
     });
@@ -1136,7 +1143,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
 
     let result;
     try {
-      result = await waitForTransactionWithResult(txnHash, dapp.networks.sui.chain);
+      result = await waitForTransactionWithResult(txnHash, window.dapp.networks.sui.chain);
     } catch (e) {
       console.error(e);
       await client.terminal.log({
@@ -1178,7 +1185,7 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       return;
     }
 
-    const object = await getProvider(dapp.networks.sui.chain).getObject({
+    const object = await getProvider(window.dapp.networks.sui.chain).getObject({
       id: targetObjectId,
       options: {
         showType: true,
@@ -1397,13 +1404,13 @@ export const Compiler: React.FunctionComponent<InterfaceProps> = ({
       {
         compiledModulesAndDeps ? (
           <Deploy
-            wallet={'Dsrv'}
+            wallet={'walletStandard'}
             accountID={accountID}
             compileTimestamp={compileTimestamp}
             cliVersion={cliVersion}
             packageName={packageName}
             compiledModulesAndDeps={compiledModulesAndDeps}
-            dapp={dapp}
+            dapp={window.dapp}
             client={client}
             gas={gas}
             setDeployedContract={setDeployedContract}

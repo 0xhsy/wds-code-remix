@@ -60,14 +60,11 @@ export const Deploy: React.FunctionComponent<InterfaceProps> = ({
   gas,
   setDeployedContract,
   setAtAddress,
-  setSuiObjects,
-  setTargetObjectId,
-  setGenericParameters,
-  setParameters,
   setInputAddress,
   initContract,
   uploadCodeChecked,
 }) => {
+
   const [inProgress, setInProgress] = useState<boolean>(false);
   const [deployIconSpin, setDeployIconSpin] = useState<string>('');
   const [abi, setABI] = useState<any>({});
@@ -92,10 +89,10 @@ export const Deploy: React.FunctionComponent<InterfaceProps> = ({
       throw new Error('Not prepared metadata and module');
     }
 
-    await dsrvProceed();
+    await walletStandardProceed();
   };
 
-  const dsrvProceed = async () => {
+  const walletStandardProceed = async () => {
     setInProgress(true);
     sendCustomEvent('deploy', {
       event_category: 'sui',
@@ -107,6 +104,7 @@ export const Deploy: React.FunctionComponent<InterfaceProps> = ({
     }
 
     setDeployIconSpin('fa-spin');
+
     const rawTx_ = await dappPublishTxn(
       accountID,
       dapp.networks.sui.chain as SuiChainId,
@@ -118,6 +116,7 @@ export const Deploy: React.FunctionComponent<InterfaceProps> = ({
       method: 'dapp:signAndSendTransaction',
       params: [rawTx_],
     });
+
     if (isEmptyList(txnHash)) {
       console.error(`dapp:signAndSendTransaction fail`);
       return;
