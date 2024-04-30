@@ -81,9 +81,9 @@ export const Deploy: React.FunctionComponent<InterfaceProps> = ({
       throw new Error('No accountID');
     }
 
-    if (wallet !== 'Dsrv') {
-      throw new Error('Wallet is not Dsrv');
-    }
+    // if (wallet !== 'Dsrv') {
+    //   throw new Error('Wallet is not Dsrv');
+    // }
 
     if (!compiledModulesAndDeps) {
       throw new Error('Not prepared metadata and module');
