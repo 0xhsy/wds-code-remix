@@ -7,7 +7,7 @@ import AlertCloseButton from '../common/AlertCloseButton';
 import { log } from '../../utils/logger';
 import { NetworkUI } from '../common/Network';
 import Web3 from 'web3';
-import { STYLUS_TESTNET_V2_CHAIN_ID } from './const';
+import { ARBITRUM_SEPOLIA_CHAIN_ID } from './const';
 
 const web3 = new Web3((window as any).ethereum);
 
@@ -94,20 +94,20 @@ export const MetamaskConnect: React.FunctionComponent<InterfaceProps> = ({
         <AlertCloseButton onClick={() => setError('')} />
         <div>{error}</div>
       </Alert>
-      {network === STYLUS_TESTNET_V2_CHAIN_ID ? (
-        <NetworkUI networkName={'Stylus testnet (v2)'} />
+      {network === ARBITRUM_SEPOLIA_CHAIN_ID ? (
+        <NetworkUI networkName={'Arbitrum Sepolia'} />
       ) : (
         <small style={{ color: 'red', fontWeight: 'bold' }}>
-          Only Stylus Testnet V2 network is supported currently.
+          Only Arbitrum Sepolia network is supported currently.
           <br />
           Please switch to the network below and reconnect your wallet.
           <br />
-          Chain ID: 13331371
+          Chain ID: 421614
           <br />
-          RPC URL: https://stylusv2.arbitrum.io/rpc
+          RPC URL: https://sepolia-rollup.arbitrum.io/rpc
         </small>
       )}
-      {network === STYLUS_TESTNET_V2_CHAIN_ID ? (
+      {network === ARBITRUM_SEPOLIA_CHAIN_ID ? (
         <Form>
           <Form.Group>
             <Form.Text className="text-muted" style={mb4}>
